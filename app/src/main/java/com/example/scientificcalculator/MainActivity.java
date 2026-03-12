@@ -84,10 +84,14 @@ public class MainActivity extends AppCompatActivity {
         bfact.setOnClickListener(v -> {
             String valStr = tvmain.getText().toString();
             if (!valStr.isEmpty()) {
-                int val = Integer.parseInt(valStr);
-                int fact = factorial(val);
-                tvmain.setText(String.valueOf(fact));
-                tvsec.setText(String.format(Locale.US, "%d!", val));
+                try {
+                    int val = Integer.parseInt(valStr);
+                    int fact = factorial(val);
+                    tvmain.setText(String.valueOf(fact));
+                    tvsec.setText(String.format(Locale.US, "%d!", val));
+                } catch (NumberFormatException e) {
+                    tvmain.setText(R.string.error);
+                }
             }
         });
         bsquare.setOnClickListener(v -> {
@@ -95,15 +99,15 @@ public class MainActivity extends AppCompatActivity {
             if (!valStr.isEmpty()) {
                 double d = Double.parseDouble(valStr);
                 double square = d * d;
-                tvmain.setText(String.valueOf(square));
-                tvsec.setText(String.format(Locale.US, "%f^2", d));
+                tvmain.setText(formatResult(square));
+                tvsec.setText(String.format(Locale.US, "%s^2", formatResult(d)));
             }
         });
         bsqrt.setOnClickListener(v -> {
             String val = tvmain.getText().toString();
             if (!val.isEmpty()) {
                 double r = Math.sqrt(Double.parseDouble(val));
-                tvmain.setText(String.valueOf(r));
+                tvmain.setText(formatResult(r));
             }
         });
         binv.setOnClickListener(v -> tvmain.append("^(-1)"));
@@ -114,15 +118,27 @@ public class MainActivity extends AppCompatActivity {
         bequal.setOnClickListener(v -> {
             String val = tvmain.getText().toString();
             String replacedstr = val.replace('÷', '/').replace('×', '*');
-            double result = eval(replacedstr);
-            tvsec.setText(val);
-            tvmain.setText(String.valueOf(result));
+            try {
+                double result = eval(replacedstr);
+                tvsec.setText(val);
+                tvmain.setText(formatResult(result));
+            } catch (Exception e) {
+                tvmain.setText(R.string.error);
+            }
         });
         bpi.setOnClickListener(v -> {
             tvsec.setText(bpi.getText());
             tvmain.append(pi);
         });
         bdot.setOnClickListener(v -> tvmain.append("."));
+    }
+
+    private String formatResult(double result) {
+        if (result == (long) result) {
+            return String.valueOf((long) result);
+        } else {
+            return String.valueOf(result);
+        }
     }
 
     //Factorial Function
